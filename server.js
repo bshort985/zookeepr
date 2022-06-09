@@ -45,16 +45,31 @@ function filterByQuery(query, animalsArray) {
 
     return filteredResults;
 }
-
+// takes in the id and array of animals and returns a single animal object
+function findById(id, animalsArray) {
+    const result = animalsArray.filter(animal => animal.id === id)[0];
+    return result;
+  };
+  
 app.get("/api/animals", (req, res) => {
     let results = animals;
-    
     if (req.query) {
         results = filterByQuery(req.query, results);
     }
-
     res.json(results);
 });
+
+// Now that we have multiple routes, we have to pay extra attention to the order of the routes. A param route must come after the other GET route
+//  req.query is multifaceted, often combining multiple parameters, whereas req.param is specific to a single property, often intended to retrieve a single record.
+
+app.get('/api/animals/:id', (req, res) => {
+    const result = findById(req.params.id, animals);
+    if (result) {
+      res.json(result);
+    } else {
+        res.send(404);
+    }
+  });
 
 
 app.listen(PORT, () => {
